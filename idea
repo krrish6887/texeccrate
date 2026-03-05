@@ -1,0 +1,140 @@
+BIT SINDRI
+UG (Undergraduate) CALL FOR PROPOSAL FELLOWSHIP PROGRAM 202S APPLICATION For TEXMIN-BIT SINDRI Mining CPS COE
+Project Title: An AI-Driven IoT System for Real-Time Gas Monitoring and Risk Prediction in Underground Coal Mines.
+Student Details:
+Name: Samir Kumar Modi
+Department: Mining Engineering
+Email ID: emailonebrown@gmail.com
+Mobile No. 9279437105
+Faculty Mentor Details:
+Name:
+Department: Mining engineering
+Email ID:
+Mobile No.:
+Domain: Mine Safety Engineering using IoT-based smart gas monitoring.
+Executive Summary: Underground coal mining involves serious safety risks due to the accumulation of hazardous gases such as methane and carbon monoxide, which can cause explosions and fatal accidents if not detected early. Existing gas monitoring methods are often manual and limited to specific locations, making continuous surveillance difficult in high-risk zones like goaf areas and return airways.
+This project proposes an IoT-based smart gas monitoring system to continuously measure harmful gas concentrations at critical underground locations and transmit real-time data to a Central monitoring unit using mine-safe wireless communication. The system provides early warnings when gas levels approach unsafe limits, enabling timely safety actions and improved ventilation control.
+By integrating continuous sensing and real-time monitoring, the proposed solution aims to enhance mine safety, reduce accident risks, and protect miners’ lives through proactive gas hazard management.
+Objectives:
+To develop an IoT-based smart gas monitoring system for early detection of hazardous gases and improvement of safety in underground coal mines:
+•
+Monitor Hazardous Gas Concentrations: Continuously measure methane, carbon monoxide, and other harmful gas levels in critical underground locations such as goaf edges, return airways, and electrical panels.
+•
+Early Warning and Risk Detection: Analyze real-time gas data to identify unsafe conditions and provide timely alerts before gas concentrations reach dangerous or explosive limits.
+•
+Support Mine Safety and Ventilation Management: Provide actionable information to assist mine operators in improving ventilation control, emergency response, and overall underground safety planning.
+BIT SINDRI
+Background:
+Underground coal mining involves serious safety risks due to the presence of hazardous gases such as methane and carbon monoxide released from coal seams and goaf areas, which can cause explosions and suffocation if not detected early. Conventional gas monitoring methods rely on manual inspections and limit fixed-point measurements, often failing to provide continuous coverage in high-risk zones. Machine learning offers a powerful approach to analyze large volumes of heterogeneous data, including geological surveys and long-term operational records, enabling the prediction of underground air quality conditions and dynamic assessment of gas-related safety vulnerabilities within mines.
+Significance/Need of the Project:
+The proposed IoT- and machine learning–based approach provides a data-driven and automated solution for continuous monitoring of hazardous gases in underground coal mines, improving early detection of unsafe gas conditions compared to conventional manual and fixed-point monitoring methods. By predicting abnormal gas concentration trends and identifying critical risk zones within the mine, the system enables proactive safety measures to prevent explosions, fires, and gas-related fatalities. This approach enhances miner safety, supports effective ventilation and emergency planning, and assists in regulatory compliance with mine safety standards. Furthermore, the proposed system is scalable and adaptable to different underground mine layouts and operating conditions, making it suitable for widespread application across coal mining operations.
+Technology Gap:
+1. Traditional multi-gas detectors work only when a person carries them, so gas is checked only at that moment and place, not continuously or in hidden danger zones like goaf areas.
+2.Current gas monitoring methods do not predict danger in advance, they only show gas levels after they become high, which gives very little time for safety action.
+3. There is no smart system that combines gas data with mine conditions and past records, making it difficult to understand gas build-up trends and prevent accidents early.
+Genesis of cps development into your project:
+1. Combines physical gas sensors with smart data analysis, using fixed IoT-based sensors in underground mines along with machine learning techniques to continuously monitor gas concentrations and assess safety risks.
+2. Provides real-time monitoring with early warning capability, allowing detection of hazardous gas build-up before it reaches dangerous levels, unlike traditional methods that depend on periodic manual measurements.
+3. Enables adaptive and targeted safety management, by identifying high-risk locations and monitoring gaps within the mine to support better sensor deployment, ventilation planning, and proactive decision-making.
+BIT SINDRI
+Methodology:
+1. Data Collection:
+1. Collect real-time and historical data from fixed underground gas sensors measuring methane (CH₄), carbon monoxide (CO), oxygen (O₂), and carbon dioxide (CO₂) at critical mine locations such as goaf edges, return airways, and near electrical equipment.
+2.
+Gather mine-related operational and environmental data, including ventilation of airflow rates, mine layout, depth of workings, production activity, and geological conditions influencing gas release.
+3.
+Compile labeled datasets of mine safety conditions, such as normal atmosphere, warning-level gas concentration, and dangerous gas conditions, to support analysis and early warning generation.
+2.Data Preprocessing:
+•
+Clean the collected data by handling missing sensor readings, removing abnormal values caused by sensor faults, and correcting inconsistent entries in gas concentration and ventilation data.
+•
+Normalize the data to a common scale (for example, 0–1) to ensure uniformity across different gas sensors such as methane, carbon monoxide, and oxygen
+BIT SINDRI
+sensors.
+•
+Synchronize time-series data from multiple underground sensors and mine operation records to enable accurate analysis of gas behavior over time
+3.Feature Extraction:
+1.Derive meaningful features from raw sensor data, such as:
+i.
+Gas concentration trends over time (moving averages, rate of increase or decrease of methane and carbon monoxide).
+ii.
+Relationships between gas concentration and ventilation parameters such as airflow velocity and direction.
+iii.
+Location-based features including sensor position (goaf edge, return airway, electrical zone) and distance from active working faces.
+2. Apply feature reduction techniques such as Principal Component Analysis (PCA) to remove redundant features and improve the efficiency of gas prediction and safety analysis.
+4.Model Training & Validation:
+•
+Select suitable machine learning algorithms such as Random Forest, Support Vector Machine (SVM), and Gradient Boosting to analyze underground gas sensor data collected through the IoT-based monitoring system.
+•
+Train the models using labeled gas concentration data to classify mine conditions into safe, warning, and dangerous levels, and to predict the risk of gas accumulation in advance.
+•
+Split the dataset into training (70%), validation (15%), and testing (15%) sets to ensure reliable model performance and unbiased evaluation.
+•
+Apply cross-validation techniques (k-fold validation) to improve model accuracy, reduce overfitting, and optimize hyperparameters for real-time gas monitoring applications.
+BIT SINDRI
+5.Model Evaluation:
+•
+Evaluate model performance using standard metrics, including accuracy, precision, recall, and F1-score, to assess how effectively the machine learning model classifies underground mine conditions as safe, warning, or dangerous based on IoT sensor data.
+•
+Use confusion matrices to analyze classification errors, identify false alarms or missed gas-risk conditions, and improve the reliability of real-time gas monitoring and alert generation.
+•
+Compare the performance of multiple machine learning models to select the best-performing algorithm for deployment in the IoT-based underground gas monitoring system.
+• 6.Real-Time Prediction System:
+• IoT-based underground gas sensors continuously stream real-time data (methane, carbon monoxide, oxygen) to a central system using UHF wireless communication.
+•
+AI/ML models process the incoming data in real time, performing preprocessing, feature extraction, and inference to classify mine conditions as safe, warning, or dangerous.
+•
+Automated alerts and control actions are triggered based on model predictions, including alarms, ventilation adjustments, and power cut interlocks to prevent gas-related accidents
+7.Monitoring Dashboard & Alerts:
+•
+Design an IoT-based real-time monitoring dashboard that displays underground gas parameters such as methane (CH₄), carbon monoxide (CO), carbon dioxide (CO₂), and oxygen (O₂), along with live trends and sensor status from different Mine locations.
+•
+Visualize AI/ML-based risk classification on the dashboard by categorizing mine conditions into safe, warning, and high-risk levels, and showing gas concentration trends over time for early decision-making.
+•
+Generate automated alerts and notifications when predicted gas levels exceed safety limits, including visual warnings on the dashboard and real-time notifications (SMS/email/control room alerts) to responsible mine personnel for fast actions.
+Output — Frontend Design:
+After completing the real-time data processing and AI/ML model inference, the system provides an intuitive IoT-based frontend dashboard for underground mine gas monitoring and safety management. The output includes:
+BIT SINDRI
+1. Live Gas Parameter Visualization:
+The dashboard displays real-time values and trend graphs of underground gas parameters such as methane (CH₄), carbon monoxide (CO), carbon dioxide (CO₂), and oxygen (O₂). These visualizations help operators understand current gas conditions and observe short-term and long-term changes predicted by the AI model.
+2. Mine Safety Status Classification:
+Based on machine learning predictions, the system classifies each mine zone into safety levels:
+•
+Safe → Normal operating conditions with continuous monitoring.
+•
+Warning → Caution advisory indicating rising gas levels.
+•
+High Risk → Critical condition with immediate alerts and safety actions.
+This classification is clearly shown using color-coded indicators for quick decision-making.
+BIT SINDRI
+3. Automated Alerts and Notifications:
+When the AI/ML model detects abnormal or high-risk gas conditions, the system automatically generates alerts, including visual warnings on the dashboard, sound alarms in the control room, and SMS/email notifications to responsible mine personnel for immediate response.
+4. Zone-Based Monitoring and Location Mapping:
+The frontend displays mine zone status (goaf edges, return airways, electrical zones, longwall face) with real-time sensor health and risk levels. Interactive layouts help identify the exact location of gas accumulation and support faster safety interventions.
+5. Historical Logs and Reports:
+The system maintains time-stamped records of gas measurements, AI model predictions, alerts, and system actions. These logs support trend analysis, safety audits, and regulatory compliance.
+Deliverables/Outcomes:
+AI/ML-based predictive models for early detection and forecasting of methane and toxic gas buildup using real-time IoT sensor data.
+BIT SINDRI
+Identification of high-risk underground zones such as goaf edges, return airways, and electrical panels through data-driven analysis and model predictions.
+Interactive IoT-enabled monitoring dashboard showing live gas levels, AI-classified safety status, trends, and automated alerts.
+Scalable and deployable safety framework that integrates AI, machine learning, and IoT technologies to enhance underground mine safety.
+(Signature of Applicant)
+BIT SINDRI
+DECLARATION
+{To be sub fitted by cii individlfal S/Jiden/ ii•oriing in the ProdiicMecltnology Developiitenf)
+I Samir kumar Modi, Roll no. 24030510044 son of Jaydeo Modi , enrolled in the B.Tech. (UG) program in the Department of Mining Engineering , BIT Sindri and working in the lab of TEXMiN CoE at BIT Sindri do hereby declare that-
+1.
+I am interested in working in the Product/Technology Development Project entitled “Enhancing
+mining activities and novel use of minerals/coal.”
+under the mentorship of (Name of the mentor): PfOf. Gunjan Gandhi, Dcsibmation: Assistant Professor, Department/organization: Electronics & Communicationn Engineering, BIT Sindri.
+2.
+I shall access the facilities of Host Institution labs with due diligence and carc, abiding by all the guidelines/instructions laid down by the centre.
+3.
+I shall be responsible for any damagt caused by mc io the laboratory/infrastructural facility provided during the project.
+4.
+I, hereby, grant an exclusive right over the Intellectual Property (IP) generated under the pilot project done by me to TEXMiN CoE.
+s. I, hereby, agree to follow all the rules and regulations of TEXMiN CoE, including the IP Policy.
+6. I, hereby, agree not to disclose, share, or publish any details, results, or findings of the project or any related intellectual property to any third party without the prior written consent of TEXMiN CoE. This confidentiality obligation will remain in effect even afler the completion of the project.
+Date: 3 4 20 2 i\
+Signature of Applicant:

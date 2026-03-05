@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MineGuard AI — Underground Gas Monitoring System</title>
+    <meta name="description"
+        content="AI-driven IoT real-time gas monitoring and risk prediction dashboard for underground coal mines. Monitor CH4, CO, CO2, O2 with predictive alerts." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        amber: { DEFAULT: '#f59e0b', light: '#fcd34d' },
+                        safe: '#22c55e',
+                        warn: '#f59e0b',
+                        danger: '#ef4444',
+                        panel: '#07142a',
+                        card: '#0c1f38',
+                        base: '#030b18',
+                        border: '#1a3255',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <path d="M16 2L4 9V23L16 30L28 23V9L16 2Z" stroke="#f59e0b" stroke-width="2"
+                        fill="rgba(245,158,11,0.1)" />
+                    <circle cx="16" cy="16" r="5" fill="#f59e0b" />
+                    <path d="M16 11V7M16 25V21M11 16H7M25 16H21" stroke="#f59e0b" stroke-width="1.5"
+                        stroke-linecap="round" />
+                </svg>
+            </div>
+            <div class="logo-text">
+                <span class="logo-brand">MineGuard</span>
+                <span class="logo-sub">AI v2.0</span>
+            </div>
+        </div>
+
+        <div class="sidebar-section-label">MINE ZONES</div>
+        <nav class="zone-nav" id="zoneNav">
+            <button class="zone-btn active" data-zone="zone1" id="navZone1">
+                <span class="zone-dot" id="dotZone1"></span>
+                <span class="zone-name">Goaf Edge — Sector A</span>
+                <span class="zone-risk" id="riskZone1">SAFE</span>
+            </button>
+            <button class="zone-btn" data-zone="zone2" id="navZone2">
+                <span class="zone-dot" id="dotZone2"></span>
+                <span class="zone-name">Longwall Face — LW4</span>
+                <span class="zone-risk" id="riskZone2">SAFE</span>
+            </button>
+            <button class="zone-btn" data-zone="zone3" id="navZone3">
+                <span class="zone-dot" id="dotZone3"></span>
+                <span class="zone-name">Return Airway — R2</span>
+                <span class="zone-risk" id="riskZone3">SAFE</span>
+            </button>
+            <button class="zone-btn" data-zone="zone4" id="navZone4">
+                <span class="zone-dot" id="dotZone4"></span>
+                <span class="zone-name">E-Panel (Electrical)</span>
+                <span class="zone-risk" id="riskZone4">SAFE</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-section-label" style="margin-top:24px;">SENSORS HEALTH</div>
+        <div class="sensor-health-grid" id="sensorHealthGrid">
+            <!-- Filled by JS -->
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="system-clock" id="systemClock">--:--:--</div>
+            <div class="system-date" id="systemDate">Loading…</div>
+            <div class="system-conn">
+                <span class="conn-dot"></span> Live · BIT Sindri CoE
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main" id="mainContent">
+
+        <!-- HEADER -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Control Room Dashboard</h1>
+                <span class="page-sub">TEXMiN · Underground CPS Safety System</span>
+            </div>
+            <div class="topbar-right">
+                <button class="btn btn-crisis" id="btnCrisis" title="Inject a simulated gas crisis for demo">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    Inject Crisis
+                </button>
+                <button class="btn btn-vent" id="btnVent">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm0 0v4m0 14v4M2 12h4m14 0h4" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <span id="ventLabel">Ventilation: AUTO</span>
+                </button>
+                <div class="alert-badge-wrap">
+                    <button class="btn btn-outline" id="btnSilence">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18.77 11.12A7 7 0 006 7v4.07" />
+                            <path d="M22 22L2 2M9.73 21A3 3 0 0015 19.36" />
+                            <path d="M13 16l-6-6" />
+                        </svg>
+                        Silence
+                    </button>
+                    <div class="alert-badge" id="alertBadge">0</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- KPI CARDS -->
+        <section class="kpi-row" id="kpiRow">
+            <div class="kpi-card" id="kpiCH4">
+                <div class="kpi-label">
+                    <span class="kpi-gas-tag ch4">CH₄</span> Methane
+                </div>
+                <div class="kpi-value" id="valCH4">0.00</div>
+                <div class="kpi-unit">% Vol</div>
+                <div class="kpi-threshold">LEL: 1.0% · UEL: 5.0%</div>
+                <div class="kpi-trend" id="trendCH4">— Stable</div>
+                <div class="kpi-bar-wrap">
+                    <div class="kpi-bar" id="barCH4"></div>
+                </div>
+            </div>
+            <div class="kpi-card" id="kpiCO">
+                <div class="kpi-label">
+                    <span class="kpi-gas-tag co">CO</span> Carbon Monoxide
+                </div>
+                <div class="kpi-value" id="valCO">0</div>
+                <div class="kpi-unit">ppm</div>
+                <div class="kpi-threshold">Alarm: 25 ppm · IDLH: 1200 ppm</div>
+                <div class="kpi-trend" id="trendCO">— Stable</div>
+                <div class="kpi-bar-wrap">
+                    <div class="kpi-bar" id="barCO"></div>
+                </div>
+            </div>
+            <div class="kpi-card" id="kpiCO2">
+                <div class="kpi-label">
+                    <span class="kpi-gas-tag co2">CO₂</span> Carbon Dioxide
+                </div>
+                <div class="kpi-value" id="valCO2">0.00</div>
+                <div class="kpi-unit">% Vol</div>
+                <div class="kpi-threshold">Alarm: 0.5% · Max: 1.5%</div>
+                <div class="kpi-trend" id="trendCO2">— Stable</div>
+                <div class="kpi-bar-wrap">
+                    <div class="kpi-bar" id="barCO2"></div>
+                </div>
+            </div>
+            <div class="kpi-card" id="kpiO2">
+                <div class="kpi-label">
+                    <span class="kpi-gas-tag o2">O₂</span> Oxygen
+                </div>
+                <div class="kpi-value" id="valO2">20.9</div>
+                <div class="kpi-unit">% Vol</div>
+                <div class="kpi-threshold">Min: 19.5% · Normal: 20.9%</div>
+                <div class="kpi-trend" id="trendO2">— Stable</div>
+                <div class="kpi-bar-wrap">
+                    <div class="kpi-bar" id="barO2"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN GRID -->
+        <div class="main-grid">
+
+            <!-- LEFT — Charts + Map -->
+            <div class="col-left">
+
+                <!-- Live Trend Charts -->
+                <div class="panel chart-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b"
+                                stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                            </svg>
+                            Live Gas Trend — <span id="chartZoneLabel">All Zones Avg</span>
+                        </div>
+                        <div class="chart-legend">
+                            <span class="leg-item leg-ch4">CH₄</span>
+                            <span class="leg-item leg-co">CO (/100)</span>
+                            <span class="leg-item leg-co2">CO₂</span>
+                            <span class="leg-item leg-o2">O₂ (/10)</span>
+                        </div>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Mine Map -->
+                <div class="panel map-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b"
+                                stroke-width="2">
+                                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6" />
+                            </svg>
+                            Interactive Mine Layout
+                        </div>
+                        <div class="map-legend">
+                            <span class="ml safe">Safe</span>
+                            <span class="ml warn">Warning</span>
+                            <span class="ml danger">High Risk</span>
+                        </div>
+                    </div>
+                    <div class="map-container">
+                        <svg class="mine-svg" id="mineSvg" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background -->
+                            <rect width="700" height="320" fill="#060d1a" />
+
+                            <!-- Tunnels / corridors -->
+                            <rect x="60" y="140" width="580" height="40" rx="4" fill="#0d1e35" stroke="#1e3a5f"
+                                stroke-width="1" />
+                            <rect x="180" y="40" width="40" height="140" rx="4" fill="#0d1e35" stroke="#1e3a5f"
+                                stroke-width="1" />
+                            <rect x="460" y="40" width="40" height="140" rx="4" fill="#0d1e35" stroke="#1e3a5f"
+                                stroke-width="1" />
+                            <rect x="180" y="180" width="40" height="100" rx="4" fill="#0d1e35" stroke="#1e3a5f"
+                                stroke-width="1" />
+                            <rect x="460" y="180" width="40" height="100" rx="4" fill="#0d1e35" stroke="#1e3a5f"
+                                stroke-width="1" />
+
+                            <!-- ZONE 1: Goaf Edge -->
+                            <rect id="mapZone1" x="60" y="40" width="100" height="100" rx="8" fill="#0f2a1a"
+                                stroke="#22c55e" stroke-width="2" />
+                            <text x="110" y="78" text-anchor="middle" fill="#86efac" font-size="9" font-family="Inter"
+                                font-weight="600">GOAF EDGE</text>
+                            <text x="110" y="90" text-anchor="middle" fill="#86efac" font-size="8"
+                                font-family="Inter">Sector A</text>
+                            <circle id="mapDot1" cx="110" cy="105" r="7" fill="#22c55e" class="map-pulse" />
+                            <text id="mapRisk1" x="110" y="126" text-anchor="middle" fill="#86efac" font-size="7"
+                                font-family="JetBrains Mono">SAFE</text>
+
+                            <!-- ZONE 2: Longwall Face -->
+                            <rect id="mapZone2" x="240" y="40" width="200" height="100" rx="8" fill="#0f2a1a"
+                                stroke="#22c55e" stroke-width="2" />
+                            <text x="340" y="75" text-anchor="middle" fill="#86efac" font-size="9" font-family="Inter"
+                                font-weight="600">LONGWALL FACE</text>
+                            <text x="340" y="87" text-anchor="middle" fill="#86efac" font-size="8"
+                                font-family="Inter">LW4 — Active Extraction</text>
+                            <circle id="mapDot2" cx="340" cy="105" r="7" fill="#22c55e" class="map-pulse" />
+                            <text id="mapRisk2" x="340" y="126" text-anchor="middle" fill="#86efac" font-size="7"
+                                font-family="JetBrains Mono">SAFE</text>
+
+                            <!-- ZONE 3: Return Airway -->
+                            <rect id="mapZone3" x="540" y="40" width="120" height="100" rx="8" fill="#0f2a1a"
+                                stroke="#22c55e" stroke-width="2" />
+                            <text x="600" y="78" text-anchor="middle" fill="#86efac" font-size="9" font-family="Inter"
+                                font-weight="600">RETURN</text>
+                            <text x="600" y="90" text-anchor="middle" fill="#86efac" font-size="8"
+                                font-family="Inter">Airway R2</text>
+                            <circle id="mapDot3" cx="600" cy="105" r="7" fill="#22c55e" class="map-pulse" />
+                            <text id="mapRisk3" x="600" y="126" text-anchor="middle" fill="#86efac" font-size="7"
+                                font-family="JetBrains Mono">SAFE</text>
+
+                            <!-- ZONE 4: E-Panel -->
+                            <rect id="mapZone4" x="240" y="200" width="200" height="80" rx="8" fill="#0f2a1a"
+                                stroke="#22c55e" stroke-width="2" />
+                            <text x="340" y="232" text-anchor="middle" fill="#86efac" font-size="9" font-family="Inter"
+                                font-weight="600">E-PANEL</text>
+                            <text x="340" y="244" text-anchor="middle" fill="#86efac" font-size="8"
+                                font-family="Inter">Electrical Zone</text>
+                            <circle id="mapDot4" cx="340" cy="258" r="7" fill="#22c55e" class="map-pulse" />
+                            <text id="mapRisk4" x="340" y="276" text-anchor="middle" fill="#86efac" font-size="7"
+                                font-family="JetBrains Mono">SAFE</text>
+
+                            <!-- Airflow arrows -->
+                            <defs>
+                                <marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6"
+                                    orient="auto">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#1e3a5f" />
+                                </marker>
+                            </defs>
+                            <line x1="160" y1="160" x2="230" y2="160" stroke="#1e3a5f" stroke-width="1.5"
+                                marker-end="url(#arr)" stroke-dasharray="4,2" />
+                            <line x1="450" y1="160" x2="530" y2="160" stroke="#1e3a5f" stroke-width="1.5"
+                                marker-end="url(#arr)" stroke-dasharray="4,2" />
+
+                            <!-- Ventilation status label -->
+                            <rect x="280" y="155" width="140" height="30" rx="4" fill="#061225" />
+                            <text id="ventStatusMap" x="350" y="165" text-anchor="middle" fill="#60a5fa" font-size="8"
+                                font-family="Inter">VENTILATION SYSTEM</text>
+                            <text id="ventValueMap" x="350" y="177" text-anchor="middle" fill="#93c5fd" font-size="9"
+                                font-family="JetBrains Mono" font-weight="600">AUTO — ACTIVE</text>
+                        </svg>
+                    </div>
+                </div>
+
+            </div><!-- /col-left -->
+
+            <!-- RIGHT — AI Panel + Alerts -->
+            <div class="col-right">
+
+                <!-- AI Risk Classification -->
+                <div class="panel ai-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 8v4l3 3" />
+                            </svg>
+                            AI Risk Classifier
+                        </div>
+                        <div class="ai-model-badge">Random Forest · Gradient Boost</div>
+                    </div>
+
+                    <div class="ai-zone-list">
+                        <!-- ZONE 1 -->
+                        <div class="ai-zone-card" id="aiCard1">
+                            <div class="ai-zone-header">
+                                <span class="ai-zone-name">Goaf Edge · Sector A</span>
+                                <span class="ai-status-badge safe" id="aiBadge1">SAFE</span>
+                            </div>
+                            <div class="ai-confidence-row">
+                                <span class="ai-conf-label">AI Confidence</span>
+                                <span class="ai-conf-val" id="aiConf1">96%</span>
+                            </div>
+                            <div class="ai-conf-bar-wrap">
+                                <div class="ai-conf-bar safe" id="aiBar1" style="width:96%"></div>
+                            </div>
+                            <div class="ai-readings" id="aiReadings1">CH₄: — · CO: — · O₂: —</div>
+                        </div>
+                        <!-- ZONE 2 -->
+                        <div class="ai-zone-card" id="aiCard2">
+                            <div class="ai-zone-header">
+                                <span class="ai-zone-name">Longwall Face · LW4</span>
+                                <span class="ai-status-badge safe" id="aiBadge2">SAFE</span>
+                            </div>
+                            <div class="ai-confidence-row">
+                                <span class="ai-conf-label">AI Confidence</span>
+                                <span class="ai-conf-val" id="aiConf2">92%</span>
+                            </div>
+                            <div class="ai-conf-bar-wrap">
+                                <div class="ai-conf-bar safe" id="aiBar2" style="width:92%"></div>
+                            </div>
+                            <div class="ai-readings" id="aiReadings2">CH₄: — · CO: — · O₂: —</div>
+                        </div>
+                        <!-- ZONE 3 -->
+                        <div class="ai-zone-card" id="aiCard3">
+                            <div class="ai-zone-header">
+                                <span class="ai-zone-name">Return Airway · R2</span>
+                                <span class="ai-status-badge safe" id="aiBadge3">SAFE</span>
+                            </div>
+                            <div class="ai-confidence-row">
+                                <span class="ai-conf-label">AI Confidence</span>
+                                <span class="ai-conf-val" id="aiConf3">88%</span>
+                            </div>
+                            <div class="ai-conf-bar-wrap">
+                                <div class="ai-conf-bar safe" id="aiBar3" style="width:88%"></div>
+                            </div>
+                            <div class="ai-readings" id="aiReadings3">CH₄: — · CO: — · O₂: —</div>
+                        </div>
+                        <!-- ZONE 4 -->
+                        <div class="ai-zone-card" id="aiCard4">
+                            <div class="ai-zone-header">
+                                <span class="ai-zone-name">E-Panel · Electrical</span>
+                                <span class="ai-status-badge safe" id="aiBadge4">SAFE</span>
+                            </div>
+                            <div class="ai-confidence-row">
+                                <span class="ai-conf-label">AI Confidence</span>
+                                <span class="ai-conf-val" id="aiConf4">94%</span>
+                            </div>
+                            <div class="ai-conf-bar-wrap">
+                                <div class="ai-conf-bar safe" id="aiBar4" style="width:94%"></div>
+                            </div>
+                            <div class="ai-readings" id="aiReadings4">CH₄: — · CO: — · O₂: —</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mini Gauge Charts -->
+                <div class="panel gauge-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b"
+                                stroke-width="2">
+                                <path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm0 0v4" />
+                                <path d="M12 12l4-4" />
+                            </svg>
+                            Gas Level Gauges
+                        </div>
+                    </div>
+                    <div class="gauge-grid">
+                        <div class="gauge-item">
+                            <canvas id="gaugeCH4" width="120" height="80"></canvas>
+                            <div class="gauge-label">CH₄</div>
+                        </div>
+                        <div class="gauge-item">
+                            <canvas id="gaugeCO" width="120" height="80"></canvas>
+                            <div class="gauge-label">CO</div>
+                        </div>
+                        <div class="gauge-item">
+                            <canvas id="gaugeCO2" width="120" height="80"></canvas>
+                            <div class="gauge-label">CO₂</div>
+                        </div>
+                        <div class="gauge-item">
+                            <canvas id="gaugeO2" width="120" height="80"></canvas>
+                            <div class="gauge-label">O₂</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Log -->
+                <div class="panel alert-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b"
+                                stroke-width="2">
+                                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                <path d="M13.73 21a2 2 0 01-3.46 0" />
+                            </svg>
+                            Real-Time Alert Log
+                        </div>
+                        <button class="clear-btn" id="btnClearLog">Clear</button>
+                    </div>
+                    <div class="alert-log" id="alertLog">
+                        <div class="alert-empty">No active alerts. System nominal.</div>
+                    </div>
+                </div>
+
+            </div><!-- /col-right -->
+
+        </div><!-- /main-grid -->
+
+        <!-- FOOTER STATS BAR -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-label">Active Sensors</span>
+                <span class="stat-val" id="statSensors">16 / 16</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">AI Model Accuracy</span>
+                <span class="stat-val">97.3%</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Data Points Processed</span>
+                <span class="stat-val" id="statDataPoints">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Uptime</span>
+                <span class="stat-val" id="statUptime">00:00:00</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Last AI Inference</span>
+                <span class="stat-val" id="statLastInfer">—</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Communication</span>
+                <span class="stat-val green">UHF · Active</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ALERT TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
